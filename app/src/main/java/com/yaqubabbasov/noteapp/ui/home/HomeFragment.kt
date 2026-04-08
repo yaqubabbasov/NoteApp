@@ -71,10 +71,11 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
+   /* override fun onResume() {
         super.onResume()
         viewModel.intent(HomeIntent.LoadItem)
     }
+    */
 
     override fun onDestroy() {
         super.onDestroy()
