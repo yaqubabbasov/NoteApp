@@ -43,6 +43,11 @@ class HomeAdapter(val İtemClicked: (Note) -> Unit, val context: Context, var li
     override fun getItemCount(): Int {
         return list.size
     }
+    fun updatelist(list1: List<Note>){
+        list = list1
+        notifyDataSetChanged()
+
+    }
 
 
 }

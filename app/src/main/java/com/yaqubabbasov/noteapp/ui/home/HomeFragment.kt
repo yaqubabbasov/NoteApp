@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var homeadapter: HomeAdapter
     private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
@@ -35,6 +36,9 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.recycleview.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        homeadapter= HomeAdapter({viewModel.intent(HomeIntent.DeleteItem(it.id))},requireContext(),emptyList())
+        binding.recycleview.adapter = homeadapter
+        viewModel.intent(HomeIntent.LoadItem)
         observestate()
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_detailFragment)
@@ -90,12 +94,7 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.state.collect {state->
                 render(state)
-                binding.recycleview.adapter = HomeAdapter({ item ->
-                    item.id.let {
-                        viewModel.intent(HomeIntent.DeleteItem(it))
-
-                    }
-                }, requireContext(), state.notes)
+                homeadapter.updatelist(state.notes)
             }
         }
     }
