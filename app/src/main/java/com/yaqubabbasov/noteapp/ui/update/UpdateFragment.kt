@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.yaqubabbasov.noteapp.R
 import com.yaqubabbasov.noteapp.databinding.FragmentUpdateBinding
+import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailEffect
+import com.yaqubabbasov.noteapp.ui.update.update_contract.UpdateEffect
 import com.yaqubabbasov.noteapp.ui.update.update_contract.UpdateIntent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -40,38 +42,52 @@ class UpdateFragment : Fragment() {
         val note = args.Note
         binding.texttitle.setText(note.title)
         binding.textdescribe.setText(note.content)
+        binding.popbackbutton.setOnClickListener {
+            findNavController().popBackStack()
+        }
         observestate()
+        observeeffect()
         binding.updateButton.setOnClickListener {
             val title = binding.texttitle.text.toString().trim()
             val content = binding.textdescribe.text.toString().trim()
-            var hasError = false
-
-
-            if (title.isEmpty()) {
-                binding.titlelayout.error = "Title is required"
-                hasError = true
-            }
-            if (content.isEmpty()) {
-                binding.contentlayout.error = "Content is required"
-                hasError = true
-            }
-            if (title.isEmpty() || content.isEmpty()) return@setOnClickListener
             viewModel.intent(UpdateIntent.UpdateItem(note.id, title, content))
 
         }
 
 
     }
-    fun observestate(){
+    fun observestate() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.state.collect{
-                    if (it.isUpdate){
-                        Toast.makeText(requireContext(), "Updated", Toast.LENGTH_SHORT).show()
-                        findNavController().popBackStack()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect {
+                    binding.progressBar.visibility = if (it.isLoading) View.VISIBLE else View.GONE
+                    binding.constraintLayout.visibility = if (it.isLoading) View.GONE else View.VISIBLE
+
+                }
+            }
+        }
+    }
+    fun observeeffect(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.effect.collect{effect->
+                    when(effect){
+                        is UpdateEffect.ShowToast -> {
+                            Toast.makeText(
+                                requireContext(),
+                                effect.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is UpdateEffect.NavigateBack -> {
+                            findNavController().popBackStack()
+                        }
+                        else -> {}
+
                     }
+
                 }
-                }
+            }
         }
     }
 

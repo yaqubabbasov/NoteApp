@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.yaqubabbasov.noteapp.R
 import com.yaqubabbasov.noteapp.databinding.FragmentHomeBinding
 import com.yaqubabbasov.noteapp.ui.home.home_contract.HomeIntent
+import com.yaqubabbasov.noteapp.ui.home.home_contract.HomeState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -41,6 +42,7 @@ class HomeFragment : Fragment() {
         searchview()
 
 
+
     }
 
     private fun searchview() {
@@ -57,25 +59,52 @@ class HomeFragment : Fragment() {
 
         })
     }
+    fun render(state: HomeState) = with(binding) {
+        when {
+                state.isLoading -> {
+
+                    recycleview.visibility = View.GONE
+                    imageView.visibility = View.GONE
+                    textempty.visibility = View.GONE
+
+                }
+
+                state.notes.isNotEmpty() -> {
+                    recycleview.visibility = View.VISIBLE
+                    imageView.visibility = View.GONE
+                    textempty.visibility = View.GONE
+
+                }
+
+                else -> {
+                    recycleview.visibility = View.GONE
+                    imageView.visibility = View.VISIBLE
+                    textempty.visibility = View.VISIBLE
+
+                }
+        }
+
+    }
 
     private fun observestate() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collect {
+            viewModel.state.collect {state->
+                render(state)
                 binding.recycleview.adapter = HomeAdapter({ item ->
                     item.id.let {
                         viewModel.intent(HomeIntent.DeleteItem(it))
 
                     }
-                }, requireContext(), it.notes)
+                }, requireContext(), state.notes)
             }
         }
     }
 
-   /* override fun onResume() {
-        super.onResume()
-        viewModel.intent(HomeIntent.LoadItem)
-    }
-    */
+    /* override fun onResume() {
+         super.onResume()
+         viewModel.intent(HomeIntent.LoadItem)
+     }
+     */
 
     override fun onDestroy() {
         super.onDestroy()

@@ -1,13 +1,17 @@
 package com.yaqubabbasov.noteapp.ui.detail
 
-import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yaqubabbasov.noteapp.data.repository.Repository
+import com.yaqubabbasov.noteapp.data.domain.Repository
+import com.yaqubabbasov.noteapp.data.repository.RepositoryImpl
+import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailEffect
 import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailIntent
 import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,6 +20,8 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(val repository: Repository): ViewModel() {
     private val _state = MutableStateFlow<DetailState>(DetailState())
     val state = _state.asStateFlow()
+    private val _effect = MutableSharedFlow<DetailEffect>()
+    val effect = _effect.asSharedFlow()
     fun intent(intent: DetailIntent){
         when(intent){
             is DetailIntent.SaveItem -> buttonClicked(intent.title, intent.content)
@@ -25,22 +31,25 @@ class DetailViewModel @Inject constructor(val repository: Repository): ViewModel
 
 
         }
-
-
     }
+
+
 
     fun buttonClicked(title: String, content: String){
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true,
-                error = null,isSaved = false)
+            if (title.isBlank() || content.isBlank()) {
+               _effect.emit(DetailEffect.ShowToast("Title and content cannot be empty"))
+                return@launch
+            }
             try {
+                _state.value = _state.value.copy(isLoading = true,
+                    error = null,isSaved = false)
                 repository.save(title, content)
-                _state.value = _state.value.copy(isLoading = false,
-                    error = null,title=title,content=content, isSaved = true)
+                _effect.emit(DetailEffect.ShowToast("Saved"))
+                _effect.emit(DetailEffect.NavigateBack)
             }catch (e: Exception){
-                _state.value = _state.value.copy(isLoading = true ,
+                _state.value = _state.value.copy(isLoading = false,
                     error = e.message,isSaved = false)
-
 
             }
 

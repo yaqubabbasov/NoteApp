@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.yaqubabbasov.noteapp.R
 import com.yaqubabbasov.noteapp.databinding.FragmentDetailBinding
+import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailEffect
 import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailIntent
 import com.yaqubabbasov.noteapp.ui.home.home_contract.HomeIntent
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,27 +38,19 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         observestate()
+        observeeffect()
+        binding.backbutton.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+
 
 
         binding.savebutton.setOnClickListener {
-
             val title = binding.texttitle.text.toString().trim()
             val content = binding.textdescribe.text.toString().trim()
-            binding.titlelayout.error = null
-            binding.contentlayout.error = null
-            var hasError = false
-
-
-            if (title.isEmpty()) {
-                binding.titlelayout.error = "Title is required"
-                hasError = true
-            }
-            if (content.isEmpty()) {
-                binding.contentlayout.error = "Content is required"
-                hasError = true
-            }
-            if (title.isEmpty() || content.isEmpty()) return@setOnClickListener
             viewModel.intent(DetailIntent.SaveItem(title, content))
         }
 
@@ -68,9 +61,31 @@ class DetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collect {
-                    if (it.isSaved) {
-                        Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
-                        findNavController().popBackStack()
+                    binding.progressBar.visibility = if (it.isLoading) View.VISIBLE else View.GONE
+                    binding.noteConstaint.visibility = if (it.isLoading) View.GONE else View.VISIBLE
+
+                }
+            }
+        }
+    }
+
+    fun observeeffect(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.effect.collect{effect->
+                    when(effect){
+                        is DetailEffect.ShowToast -> {
+                            Toast.makeText(
+                                requireContext(),
+                                effect.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is DetailEffect.NavigateBack -> {
+                            findNavController().popBackStack()
+                        }
+                        else -> {}
+
                     }
 
                 }

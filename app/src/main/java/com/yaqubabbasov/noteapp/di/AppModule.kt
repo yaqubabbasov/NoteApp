@@ -1,13 +1,12 @@
 package com.yaqubabbasov.noteapp.di
 
 import android.content.Context
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.room.Room
 import com.yaqubabbasov.noteapp.data.datasource.LocalDataSource
+import com.yaqubabbasov.noteapp.data.domain.Repository
 import com.yaqubabbasov.noteapp.data.local.dao.NoteDao
 import com.yaqubabbasov.noteapp.data.local.db.NoteDataBase
-import com.yaqubabbasov.noteapp.data.repository.Repository
+import com.yaqubabbasov.noteapp.data.repository.RepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,9 +31,11 @@ object AppModule {
     }
     @Provides
     @Singleton
-    fun provideRepository(ds: LocalDataSource): Repository {
-        return Repository(ds)
+    fun provideRepositoryImpl(ds: LocalDataSource): RepositoryImpl {
+        return RepositoryImpl(ds)
     }
+
+
 
 
 

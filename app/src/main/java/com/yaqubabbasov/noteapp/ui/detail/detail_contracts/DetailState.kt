@@ -5,7 +5,8 @@ data class DetailState(
     val error: String? = null,
     val title: String = "",
     val content: String = "",
-    val isSaved: Boolean = false
+    val isSaved: Boolean = false,
+    val effect: DetailEffect? = null
 
 
 

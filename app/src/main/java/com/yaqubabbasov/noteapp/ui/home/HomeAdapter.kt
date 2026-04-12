@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yaqubabbasov.noteapp.data.local.entity.Note
 import com.yaqubabbasov.noteapp.databinding.NoteCardBinding
 
-class HomeAdapter(val İtemClicked: (Note)->Unit,val context: Context, var list: List<Note>) :
+class HomeAdapter(val İtemClicked: (Note) -> Unit, val context: Context, var list: List<Note>) :
     RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
-   class HomeViewHolder(var binding: NoteCardBinding) : RecyclerView.ViewHolder(binding.root)
+    class HomeViewHolder(var binding: NoteCardBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(
         p0: ViewGroup,
@@ -29,7 +29,7 @@ class HomeAdapter(val İtemClicked: (Note)->Unit,val context: Context, var list:
         val item = list[p1]
         holder.binding.titletext.text = item.title
         holder.binding.contenttext.text = item.content
-        val gecis=HomeFragmentDirections.actionHomeFragmentToUpdateFragment(item)
+        val gecis = HomeFragmentDirections.actionHomeFragmentToUpdateFragment(item)
         holder.binding.cardview.setOnClickListener {
             findNavController(it).navigate(gecis)
 
@@ -43,7 +43,6 @@ class HomeAdapter(val İtemClicked: (Note)->Unit,val context: Context, var list:
     override fun getItemCount(): Int {
         return list.size
     }
-
 
 
 }

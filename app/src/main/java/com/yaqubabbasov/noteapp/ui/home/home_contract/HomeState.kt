@@ -7,6 +7,7 @@ data class HomeState (
     val notes: List<Note> = emptyList(),
     val error: String? = null,
     val word: String = "",
+    val isEmpty:Boolean=true
 
 
 )
