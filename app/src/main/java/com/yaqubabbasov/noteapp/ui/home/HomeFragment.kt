@@ -34,23 +34,23 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recycleview.layoutManager =
+        binding.noteRecycleView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         homeadapter= HomeAdapter({viewModel.intent(HomeIntent.DeleteItem(it.id))},requireContext(),emptyList())
-        binding.recycleview.adapter = homeadapter
+        binding.noteRecycleView.adapter = homeadapter
         viewModel.intent(HomeIntent.LoadItem)
-        observestate()
-        binding.fab.setOnClickListener {
+        observeState()
+        binding.fabButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_detailFragment)
         }
-        searchview()
+        searchView()
 
 
 
     }
 
-    private fun searchview() {
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+    private fun searchView() {
+        binding.noteSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 viewModel.intent(HomeIntent.WordChanged(p0.toString()))
                 return true
@@ -67,34 +67,34 @@ class HomeFragment : Fragment() {
         when {
                 state.isLoading -> {
 
-                    recycleview.visibility = View.GONE
-                    imageView.visibility = View.GONE
-                    textempty.visibility = View.GONE
+                    noteRecycleView.visibility = View.GONE
+                    productFoundText.visibility = View.GONE
+                    productFoundImageView.visibility = View.GONE
 
                 }
 
                 state.notes.isNotEmpty() -> {
-                    recycleview.visibility = View.VISIBLE
-                    imageView.visibility = View.GONE
-                    textempty.visibility = View.GONE
+                    noteRecycleView.visibility = View.VISIBLE
+                    productFoundText.visibility = View.GONE
+                    productFoundImageView.visibility = View.GONE
 
                 }
 
                 else -> {
-                    recycleview.visibility = View.GONE
-                    imageView.visibility = View.VISIBLE
-                    textempty.visibility = View.VISIBLE
+                    noteRecycleView.visibility = View.GONE
+                    productFoundText.visibility = View.VISIBLE
+                    productFoundImageView.visibility = View.VISIBLE
 
                 }
         }
 
     }
 
-    private fun observestate() {
+    private fun observeState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.state.collect {state->
                 render(state)
-                homeadapter.updatelist(state.notes)
+                homeadapter.updateList(state.notes)
             }
         }
     }

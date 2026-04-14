@@ -2,7 +2,8 @@ package com.yaqubabbasov.noteapp.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yaqubabbasov.noteapp.data.repository.RepositoryImpl
+import com.yaqubabbasov.noteapp.data.domain.NoteRepository
+import com.yaqubabbasov.noteapp.data.repository.NoteNoteRepositoryImpl
 import com.yaqubabbasov.noteapp.ui.home.home_contract.HomeIntent
 import com.yaqubabbasov.noteapp.ui.home.home_contract.HomeState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(val repositoryImpl: RepositoryImpl) : ViewModel() {
+class HomeViewModel @Inject constructor(val noteRepository: NoteRepository) : ViewModel() {
     private val _state = MutableStateFlow<HomeState>(HomeState())
     val state = _state.asStateFlow()
 
@@ -38,7 +39,7 @@ class HomeViewModel @Inject constructor(val repositoryImpl: RepositoryImpl) : Vi
                 isEmpty = false
             )
             try {
-                val result = repositoryImpl.getAllNotes()
+                val result = noteRepository.getAllNotes()
                 _state.value = _state.value.copy(
                     isLoading = false,
                     notes = result,
@@ -64,7 +65,7 @@ class HomeViewModel @Inject constructor(val repositoryImpl: RepositoryImpl) : Vi
                 error = null,
             )
             try {
-                repositoryImpl.delete(id)
+                noteRepository.delete(id)
                 _state.value = _state.value.copy(
                     isLoading = false,
                     notes = _state.value.notes.filter { it.id != id },
@@ -91,7 +92,7 @@ class HomeViewModel @Inject constructor(val repositoryImpl: RepositoryImpl) : Vi
                 error = null
             )
             try {
-                val result = repositoryImpl.search(word)
+                val result = noteRepository.search(word)
                 _state.value = _state.value.copy(
                     isLoading = false,
                     word = word,

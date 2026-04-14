@@ -3,13 +3,12 @@ package com.yaqubabbasov.noteapp.ui.home
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.Navigation
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.yaqubabbasov.noteapp.data.local.entity.Note
 import com.yaqubabbasov.noteapp.databinding.NoteCardBinding
 
-class HomeAdapter(val İtemClicked: (Note) -> Unit, val context: Context, var list: List<Note>) :
+class HomeAdapter(val itemClicked: (Note) -> Unit, val context: Context, var list: List<Note>) :
     RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
     class HomeViewHolder(var binding: NoteCardBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -27,15 +26,15 @@ class HomeAdapter(val İtemClicked: (Note) -> Unit, val context: Context, var li
         p1: Int,
     ) {
         val item = list[p1]
-        holder.binding.titletext.text = item.title
-        holder.binding.contenttext.text = item.content
+        holder.binding.cardTitleTextView.text = item.title
+        holder.binding.cardContentTextView.text = item.content
         val gecis = HomeFragmentDirections.actionHomeFragmentToUpdateFragment(item)
-        holder.binding.cardview.setOnClickListener {
+        holder.binding.noteCardView.setOnClickListener {
             findNavController(it).navigate(gecis)
 
         }
-        holder.binding.deletebutton.setOnClickListener {
-            İtemClicked(item)
+        holder.binding.cardDeleteButton.setOnClickListener {
+            itemClicked(item)
         }
 
     }
@@ -43,7 +42,7 @@ class HomeAdapter(val İtemClicked: (Note) -> Unit, val context: Context, var li
     override fun getItemCount(): Int {
         return list.size
     }
-    fun updatelist(list1: List<Note>){
+    fun updateList(list1: List<Note>){
         list = list1
         notifyDataSetChanged()
 

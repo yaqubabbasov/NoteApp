@@ -1,14 +1,13 @@
 package com.yaqubabbasov.noteapp.data.repository
 
 import com.yaqubabbasov.noteapp.data.datasource.LocalDataSource
-import com.yaqubabbasov.noteapp.data.domain.Repository
+import com.yaqubabbasov.noteapp.data.domain.NoteRepository
 import com.yaqubabbasov.noteapp.data.local.entity.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import javax.inject.Inject
 
-class RepositoryImpl @Inject constructor(val localDataSource: LocalDataSource): Repository {
+class NoteNoteRepositoryImpl @Inject constructor(val localDataSource: LocalDataSource): NoteRepository {
     override suspend fun getAllNotes(): List<Note> =
         withContext(Dispatchers.IO){
             return@withContext localDataSource.getAllNotes()

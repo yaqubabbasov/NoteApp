@@ -2,22 +2,20 @@ package com.yaqubabbasov.noteapp.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yaqubabbasov.noteapp.data.domain.Repository
-import com.yaqubabbasov.noteapp.data.repository.RepositoryImpl
+import com.yaqubabbasov.noteapp.data.domain.NoteRepository
 import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailEffect
 import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailIntent
 import com.yaqubabbasov.noteapp.ui.detail.detail_contracts.DetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(val repository: Repository): ViewModel() {
+class DetailViewModel @Inject constructor(val noteRepository: NoteRepository): ViewModel() {
     private val _state = MutableStateFlow<DetailState>(DetailState())
     val state = _state.asStateFlow()
     private val _effect = MutableSharedFlow<DetailEffect>()
@@ -44,7 +42,7 @@ class DetailViewModel @Inject constructor(val repository: Repository): ViewModel
             try {
                 _state.value = _state.value.copy(isLoading = true,
                     error = null,isSaved = false)
-                repository.save(title, content)
+                noteRepository.save(title, content)
                 _effect.emit(DetailEffect.ShowToast("Saved"))
                 _effect.emit(DetailEffect.NavigateBack)
             }catch (e: Exception){
