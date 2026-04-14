@@ -2,7 +2,7 @@ package com.yaqubabbasov.noteapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.yaqubabbasov.noteapp.data.datasource.LocalDataSource
+import com.yaqubabbasov.noteapp.data.datasource.NoteLocalDataSource
 import com.yaqubabbasov.noteapp.data.local.dao.NoteDao
 import com.yaqubabbasov.noteapp.data.local.db.NoteDataBase
 import com.yaqubabbasov.noteapp.data.repository.NoteNoteRepositoryImpl
@@ -25,12 +25,12 @@ object AppModule {
     }
     @Provides
     @Singleton
-    fun provideDataSource(dao: NoteDao): LocalDataSource{
-        return LocalDataSource(dao)
+    fun provideDataSource(dao: NoteDao): NoteLocalDataSource{
+        return NoteLocalDataSource(dao)
     }
     @Provides
     @Singleton
-    fun provideRepositoryImpl(ds: LocalDataSource): NoteNoteRepositoryImpl {
+    fun provideRepositoryImpl(ds: NoteLocalDataSource): NoteNoteRepositoryImpl {
         return NoteNoteRepositoryImpl(ds)
     }
 

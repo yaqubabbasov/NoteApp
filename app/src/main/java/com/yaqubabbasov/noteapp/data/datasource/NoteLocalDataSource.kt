@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-class LocalDataSource @Inject constructor(private val noteDao: NoteDao) {
+class NoteLocalDataSource @Inject constructor(private val noteDao: NoteDao) {
     suspend fun getAllNotes(): List<Note> =
         withContext(Dispatchers.IO) {
             delay(1000L)
